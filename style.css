@@ -150,3 +150,13 @@ body {
     border-color: var(--pico-hover-background);
     color: var(--pico-primary-inverse); /* Make the icon/text white on hover */
 }
+.delete-button {
+    cursor: pointer;
+    margin-left: auto;
+    padding-left: 1rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+.delete-button:hover {
+    opacity: 1;
+}

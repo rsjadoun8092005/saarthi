@@ -6,12 +6,14 @@
     <title>Saarthi</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <main class="container">
         <header>
             <h1>Saarthi</h1>
             <p>Your Charioteer for Daily Discipline</p>
+            <p id="streak-counter"></p> </header>
         </header>
 
         <section id="generator-view">
@@ -44,6 +46,7 @@
         <section id="checklist-view" hidden>
             <div style="display: flex; justify-content: space-between; align-items: center;">
                  <h2 id="today-date"></h2>
+                 <button id="analytics-button" class="outline">📊 Analytics</button>
                  <button id="enable-notifications-button" class="outline">🔔 Notifications</button>
             </div>
             <div id="category-filters" style="margin-bottom: 1rem;">
@@ -55,7 +58,27 @@
                 <button id="reset-button" class="secondary">Start New Plan</button>
             </footer>
         </section>
-    </main>
+        <dialog id="analytics-modal">
+          <article>
+            <header>
+              <a href="#close" aria-label="Close" class="close"></a>
+              <h2>Your Analytics Dashboard</h2>
+            </header>
+        
+            <div class="grid">
+              <div>
+                <h3>Weekly Progress</h3>
+                <canvas id="weekly-chart"></canvas>
+              </div>
+              <div>
+                <h3>Pending Tasks by Category</h3>
+                <canvas id="category-chart"></canvas>
+              </div>
+            </div>
+        
+          </article>
+        </dialog>
+</main>
     <script src="app.js"></script>
 </body>
 </html>
