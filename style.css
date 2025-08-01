@@ -160,3 +160,55 @@ body {
 .delete-button:hover {
     opacity: 1;
 }
+#add-task-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 100;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+.calendar-grid .day-name {
+    font-weight: bold;
+    text-align: center;
+    padding: 0.5rem 0;
+}
+.calendar-day {
+    padding: 0.5rem;
+    min-height: 100px;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    background-color: var(--pico-card-background-color);
+}
+.calendar-day.other-month {
+    opacity: 0.4;
+}
+.calendar-day.today {
+    border-color: var(--pico-primary);
+    background-color: var(--pico-hover-background);
+}
+.calendar-tasks {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+    font-size: 0.8em;
+}
+.calendar-tasks li {
+    padding: 2px 4px;
+    border-radius: 4px;
+    background-color: var(--pico-hover-background);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

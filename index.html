@@ -11,60 +11,79 @@
 <body>
     <main class="container">
         <header>
-            <h1>Saarthi</h1>
-            <p>Your Charioteer for Daily Discipline</p>
-            <p id="streak-counter"></p> </header>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>Saarthi</h1>
+                    <select id="plan-switcher" aria-label="Select a plan"></select>
+                </div>
+                <nav>
+                    <ul>
+                        <li><button id="view-checklist-button" class="contrast">Checklist</button></li>
+                        <li><button id="view-calendar-button" class="secondary">Calendar</button></li>
+                    </ul>
+                </nav>
+            </div>
+            <p id="streak-counter"></p>
         </header>
 
-        <section id="generator-view">
-    <h2>Generate Your Daily Plan</h2>
-    <p>Define your recurring schedule and add your specific goals for today.</p>
-    <button type="button" id="copy-template-button" class="secondary outline">📋 Copy Template for AI</button>
-
-    <form id="generator-form">
-
-        <label for="timetable-input">1. Your Daily Timetable</label>
-            <textarea id="timetable-input" rows="10" placeholder="---
-    4:00-5:00 AM - Divine Hour
-    [ ] Freshen up + light diya
-    [ ] Mantra / Chalisa / Jaap
-    ---
-    5:00-5:30 AM - Bodyweight Workout
-    [ ] Push-ups (3x15)
-    [ ] Squats (3x20)
-    ---"></textarea>
-
-            <label for="goals-input">2. Today's One-Time Goals</label>
-            <textarea id="goals-input" rows="5" placeholder="[ ] Finish API deployment chapter
-    [ ] Research PWA service workers
-    [ ] Call mentor about project idea"></textarea>
-
-        <button type="submit">Generate My Day</button>
-    </form>
-</section>
+        <section id="generator-view" hidden>
+            <h2>Generate Your Daily Plan</h2>
+            <p>Define your recurring schedule and add your specific goals for today.</p>
+            <button type="button" id="copy-template-button" class="secondary outline">📋 Copy Template for AI</button>
+            <form id="generator-form">
+                <label for="timetable-input">1. Your Daily Timetable</label>
+                <textarea id="timetable-input" rows="10" placeholder="---
+4:00-5:00 AM - Divine Hour
+[ ] * A priority task #spiritual
+    > Note for the task
+---"></textarea>
+                <label for="goals-input">2. Today's One-Time Goals</label>
+                <textarea id="goals-input" rows="5" placeholder="[ ] A specific goal for today #learning"></textarea>
+                <button type="submit">Generate My Day</button>
+            </form>
+        </section>
 
         <section id="checklist-view" hidden>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="#" id="add-task-fab" role="button" class="contrast" title="Add New Task">+</a>
+            <div id="checklist-header" style="display: flex; justify-content: space-between; align-items: center;">
                  <h2 id="today-date"></h2>
-                 <button id="analytics-button" class="outline">📊 Analytics</button>
-                 <button id="enable-notifications-button" class="outline">🔔 Notifications</button>
+                 <div>
+                    <button id="analytics-button" class="outline">📊 Analytics</button>
+                    <button id="enable-notifications-button" class="outline">🔔 Notifications</button>
+                 </div>
             </div>
-            <div id="category-filters" style="margin-bottom: 1rem;">
-            </div>
-            <div id="routine-display">
-                </div>
-             <footer>
+            <div id="category-filters" style="margin-bottom: 1rem;"></div>
+            <div id="routine-display"></div>
+            <footer>
+                <button id="manage-plans-button" class="contrast">Manage Plans</button>
                 <button id="edit-button">Edit Plan</button>
-                <button id="reset-button" class="secondary">Start New Plan</button>
             </footer>
         </section>
+        <section id="calendar-view" hidden>
+            <header class="grid">
+                <button id="prev-month-button" class="secondary outline">‹ Prev</button>
+                <h2 id="month-year-header" style="text-align: center; margin: 0;"></h2>
+                <button id="next-month-button" class="secondary outline">Next ›</button>
+            </header>
+            <div class="calendar-grid">
+                <div class="day-name">Sun</div>
+                <div class="day-name">Mon</div>
+                <div class="day-name">Tue</div>
+                <div class="day-name">Wed</div>
+                <div class="day-name">Thu</div>
+                <div class="day-name">Fri</div>
+                <div class="day-name">Sat</div>
+            </div>
+            <div id="calendar-days" class="calendar-grid">
+                </div>
+        </section>
+
         <dialog id="analytics-modal">
           <article>
             <header>
               <a href="#close" aria-label="Close" class="close"></a>
               <h2>Your Analytics Dashboard</h2>
             </header>
-        
             <div class="grid">
               <div>
                 <h3>Weekly Progress</h3>
@@ -75,10 +94,91 @@
                 <canvas id="category-chart"></canvas>
               </div>
             </div>
-        
           </article>
         </dialog>
-</main>
-    <script src="app.js"></script>
+
+        <dialog id="manage-plans-modal">
+          <article>
+            <header>
+              <a href="#close" aria-label="Close" class="close"></a>
+              <h2>Manage Your Plans</h2>
+            </header>
+            <div class="grid">
+              <button id="create-new-plan-button">Create New</button>
+              <button id="rename-plan-button" class="secondary">Rename Current</button>
+              <button id="delete-plan-button" class="secondary outline">Delete Current</button>
+            </div>
+            <hr>
+            <fieldset id="weekly-schedule">
+              <legend>Weekly Schedule</legend>
+              <p><small>Assign a plan to each day. The app will load it automatically.</small></p>
+              <div class="schedule-day-row" style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; margin-bottom: 0.5rem;">
+                <label for="schedule-1">Monday</label>
+                <select id="schedule-1" data-day="1"></select>
+              </div>
+              <div class="schedule-day-row" style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; margin-bottom: 0.5rem;">
+                <label for="schedule-2">Tuesday</label>
+                <select id="schedule-2" data-day="2"></select>
+              </div>
+              <div class="schedule-day-row" style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; margin-bottom: 0.5rem;">
+                <label for="schedule-3">Wednesday</label>
+                <select id="schedule-3" data-day="3"></select>
+              </div>
+              <div class="schedule-day-row" style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; margin-bottom: 0.5rem;">
+                <label for="schedule-4">Thursday</label>
+                <select id="schedule-4" data-day="4"></select>
+              </div>
+              <div class="schedule-day-row" style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; margin-bottom: 0.5rem;">
+                <label for="schedule-5">Friday</label>
+                <select id="schedule-5" data-day="5"></select>
+              </div>
+              <div class="schedule-day-row" style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; margin-bottom: 0.5rem;">
+                <label for="schedule-6">Saturday</label>
+                <select id="schedule-6" data-day="6"></select>
+              </div>
+              <div class="schedule-day-row" style="display: grid; grid-template-columns: 1fr 2fr; align-items: center;">
+                <label for="schedule-0">Sunday</label>
+                <select id="schedule-0" data-day="0"></select>
+              </div>
+            </fieldset>
+          </article>
+        </dialog>
+        <dialog id="add-task-modal">
+          <article>
+            <header>
+              <a href="#close" aria-label="Close" class="close"></a>
+              <h2>Add a New Task</h2>
+            </header>
+            <form id="add-task-form">
+              <label for="task-text-input">Task Name</label>
+              <input type="text" id="task-text-input" name="taskText" placeholder="What needs to be done?" required>
+        
+              <label for="task-note-input">Notes (Optional)</label>
+              <textarea id="task-note-input" name="notes" rows="3" placeholder="Add extra details..."></textarea>
+        
+              <div class="grid">
+                <label for="task-due-date-input">
+                  Due Date (Optional)
+                  <input type="date" id="task-due-date-input" name="dueDate">
+                </label>
+                <label for="task-category-input">
+                  Category (Optional)
+                  <input type="text" id="task-category-input" name="category" placeholder="#work, #learning...">
+                </label>
+              </div>
+              <label for="task-starred-input">
+                  <input type="checkbox" id="task-starred-input" name="isStarred">
+                  Mark as priority
+              </label>
+        
+              <footer>
+                <button type="submit">Add Task to Plan</button>
+              </footer>
+            </form>
+          </article>
+        </dialog>
+
+    </main>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
