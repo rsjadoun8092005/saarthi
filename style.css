@@ -1,0 +1,152 @@
+/* --- Main Layout --- */
+html[data-theme="dark"] {
+  /* --- The Complete "Saarthi Blue" Theme --- */
+
+  /* 1. Primary Accent Color */
+  --pico-primary: #3B82F6;
+  --pico-primary-inverse: #FFF;
+  --pico-primary-hover: #1D68D5;
+  --pico-primary-focus: rgba(59, 130, 246, 0.25);
+
+  /* 2. All Background Colors */
+  --pico-background-color: #0A192F;       /* Main page background */
+  --pico-card-background-color: #172A45; /* The main container for tasks */
+  --pico-secondary-background: #0d203d;  /* For hover states on rows */
+  --pico-muted-background: #2E4466;
+  --pico-hover-background: #1D3455;      /* For the category tags */
+  
+  /* 3. All Text Colors */
+  --pico-color: #CCD6F6;                  /* Main text */
+  --pico-secondary-foreground: #8892B0;    /* Muted text (like notes) */
+  --pico-muted-color: #a8b2d1;            /* Other muted text */
+
+  /* 4. All Border Colors */
+  --pico-form-element-border-color: #2E4466;
+  --pico-muted-border-color: #1D3455;
+  --pico-card-border-color: #2E4466;
+}
+
+body {
+    background-color: var(--pico-secondary-background);
+}
+#routine-display article {
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-form-element-border-color);
+    border-radius: var(--pico-card-border-radius);
+    padding: 0;
+    margin-bottom: 1rem;
+}
+#routine-display article header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+.article-body {
+    padding: 0.5rem 1rem;
+}
+
+/* --- Task Spacing & Structure --- */
+.task-container {
+    padding: 0.75rem 0;
+}
+.subtask-wrapper {
+    padding-left: 2.75rem;
+    margin-top: 0.75rem;
+}
+
+/* --- Task Row: The Flex Container --- */
+.task-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.2s ease-in-out;
+}
+.task-row:hover {
+    background-color: var(--pico-secondary-background);
+}
+
+/* --- The Custom Checkbox --- */
+.checkbox {
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--pico-form-element-border-color);
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.checkbox::before {
+    content: '✔'; /* Checkmark character */
+    font-size: 14px;
+    color: white;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+}
+.task-row.completed .checkbox {
+    background-color: var(--pico-primary);
+    border-color: var(--pico-primary);
+}
+.task-row.completed .checkbox::before {
+    transform: scale(1);
+}
+
+/* --- Task Content Alignment & Styling --- */
+.task-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-grow: 1;
+}
+.task-text {
+    flex-grow: 1;
+}
+.task-row.completed .task-content {
+    color: var(--pico-secondary-foreground);
+    text-decoration: line-through;
+}
+
+/* --- Star, Note, and Category --- */
+.star-button {
+    font-size: 1.2em;
+    line-height: 1;
+}
+.task-note {
+    font-size: 0.9em;
+    color: var(--pico-secondary-foreground);
+    padding-left: 2.75rem;
+    margin-top: 0.25rem;
+}
+.category-tag {
+    margin-left: auto;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7em;
+    border-radius: var(--pico-border-radius);
+    background-color: var(--pico-muted-background);
+}
+
+.task-row:hover {
+    background-color: var(--pico-hover-background);
+}
+
+/* Make the border of an UNCHECKED checkbox blue on hover */
+.task-row:not(.completed) .checkbox:hover {
+    border-color: var(--pico-primary);
+}
+
+/* Make the star icon pop slightly on hover */
+.star-button {
+    transition: transform 0.1s ease-in-out; /* Add transition for smoothness */
+}
+.star-button:hover {
+    transform: scale(1.2);
+}
+#enable-notifications-button:hover,
+#routine-display article header button:hover {
+    background-color: var(--pico-hover-background);
+    border-color: var(--pico-hover-background);
+    color: var(--pico-primary-inverse); /* Make the icon/text white on hover */
+}

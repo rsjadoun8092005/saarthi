@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saarthi</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <main class="container">
@@ -16,6 +17,7 @@
         <section id="generator-view">
     <h2>Generate Your Daily Plan</h2>
     <p>Define your recurring schedule and add your specific goals for today.</p>
+    <button type="button" id="copy-template-button" class="secondary outline">📋 Copy Template for AI</button>
 
     <form id="generator-form">
 
@@ -44,9 +46,12 @@
                  <h2 id="today-date"></h2>
                  <button id="enable-notifications-button" class="outline">🔔 Notifications</button>
             </div>
+            <div id="category-filters" style="margin-bottom: 1rem;">
+            </div>
             <div id="routine-display">
                 </div>
              <footer>
+                <button id="edit-button">Edit Plan</button>
                 <button id="reset-button" class="secondary">Start New Plan</button>
             </footer>
         </section>
