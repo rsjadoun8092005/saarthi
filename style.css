@@ -1,59 +1,64 @@
-/* --- Main Layout --- */
-html[data-theme="dark"] {
-  /* --- The Complete "Saarthi Blue" Theme --- */
+/* ===============================================================
+   SAARTHI - CUSTOM STYLESHEET
+   =============================================================== */
 
-  /* 1. Primary Accent Color */
+/* --- 1. THEME & COLORS --- */
+html[data-theme="dark"] {
   --pico-primary: #3B82F6;
   --pico-primary-inverse: #FFF;
   --pico-primary-hover: #1D68D5;
   --pico-primary-focus: rgba(59, 130, 246, 0.25);
-
-  /* 2. All Background Colors */
-  --pico-background-color: #0A192F;       /* Main page background */
-  --pico-card-background-color: #172A45; /* The main container for tasks */
-  --pico-secondary-background: #0d203d;  /* For hover states on rows */
+  --pico-background-color: #0A192F;
+  --pico-card-background-color: #172A45;
+  --pico-secondary-background: #0d203d;
   --pico-muted-background: #2E4466;
-  --pico-hover-background: #1D3455;      /* For the category tags */
-  
-  /* 3. All Text Colors */
-  --pico-color: #CCD6F6;                  /* Main text */
-  --pico-secondary-foreground: #8892B0;    /* Muted text (like notes) */
-  --pico-muted-color: #a8b2d1;            /* Other muted text */
-
-  /* 4. All Border Colors */
+  --pico-hover-background: #1D3455;
+  --pico-color: #CCD6F6;
+  --pico-secondary-foreground: #8892B0;
+  --pico-muted-color: #a8b2d1;
   --pico-form-element-border-color: #2E4466;
   --pico-muted-border-color: #1D3455;
   --pico-card-border-color: #2E4466;
 }
 
+/* --- 2. MAIN LAYOUT & TYPOGRAPHY --- */
 body {
-    background-color: var(--pico-secondary-background);
+    /* Fallback color */
+    background-color: var(--pico-background-color);
+    /* A subtle glow from the top center */
+    background-image: radial-gradient(at 50% 0%, #172A45 0px, var(--pico-background-color) 70%);
 }
+
 #routine-display article {
+    /* This creates the card effect */
     background: var(--pico-card-background-color);
     border: 1px solid var(--pico-form-element-border-color);
-    border-radius: var(--pico-card-border-radius);
-    padding: 0;
-    margin-bottom: 1rem;
+    border-radius: 12px; /* Rounded corners */
+    padding: 1.5rem;      /* Add breathing room inside the card */
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Lift the card off the page */
+    
+    /* These properties are no longer needed here */
+    overflow: hidden; 
 }
+
 #routine-display article header {
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--pico-muted-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
 .article-body {
-    padding: 0.5rem 1rem;
+    /* No longer needs its own padding */
+    padding: 0;
 }
 
-/* --- Task Spacing & Structure --- */
-.task-container {
-    padding: 0.75rem 0;
+/* --- 3. VISUAL HIERARCHY & ANIMATIONS --- */
+#routine-display article header strong {
+    font-size: 1.1em;
+    letter-spacing: 0.5px;
 }
-.subtask-wrapper {
-    padding-left: 2.75rem;
-    margin-top: 0.75rem;
-}
-
-/* --- Task Row: The Flex Container --- */
 .task-row {
     display: flex;
     align-items: flex-start;
@@ -61,13 +66,37 @@ body {
     cursor: pointer;
     padding: 0.25rem;
     border-radius: var(--pico-border-radius);
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s, opacity 0.3s ease;
 }
-.task-row:hover {
-    background-color: var(--pico-secondary-background);
+.task-row.completed {
+    opacity: 0.6;
+}
+.task-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-grow: 1;
+    transition: color 0.3s ease;
+}
+.task-row.completed .task-content {
+    color: var(--pico-secondary-foreground);
+    text-decoration: line-through;
 }
 
-/* --- The Custom Checkbox --- */
+/* --- 4. PROGRESS BAR --- */
+.progress-bar-container {
+    height: 6px;
+    background-color: var(--pico-hover-background);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+.progress-bar {
+    height: 100%;
+    background-color: var(--pico-primary);
+    border-radius: 0 3px 3px 0;
+    transition: width 0.4s ease-out;
+}
+
+/* --- 5. CUSTOM CHECKBOX --- */
 .checkbox {
     margin-top: 0.15rem;
     flex-shrink: 0;
@@ -80,7 +109,7 @@ body {
     transition: background-color 0.2s, border-color 0.2s;
 }
 .checkbox::before {
-    content: '✔'; /* Checkmark character */
+    content: '✔';
     font-size: 14px;
     color: white;
     transform: scale(0);
@@ -94,25 +123,35 @@ body {
     transform: scale(1);
 }
 
-/* --- Task Content Alignment & Styling --- */
-.task-content {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-grow: 1;
+/* --- 6. OTHER COMPONENTS & HOVER EFFECTS --- */
+.task-row:hover {
+    background-color: var(--pico-hover-background);
 }
-.task-text {
-    flex-grow: 1;
+.task-row:not(.completed) .checkbox:hover {
+    border-color: var(--pico-primary);
 }
-.task-row.completed .task-content {
-    color: var(--pico-secondary-foreground);
-    text-decoration: line-through;
-}
-
-/* --- Star, Note, and Category --- */
 .star-button {
-    font-size: 1.2em;
-    line-height: 1;
+    transition: transform 0.1s ease-in-out;
+}
+.star-button:hover {
+    transform: scale(1.2);
+}
+.delete-button {
+    cursor: pointer;
+    margin-left: auto;
+    padding-left: 1rem;
+    opacity: 0.5;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.delete-button:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+#enable-notifications-button:hover,
+#routine-display article header button:hover {
+    background-color: var(--pico-hover-background);
+    border-color: var(--pico-hover-background);
+    color: var(--pico-primary-inverse);
 }
 .task-note {
     font-size: 0.9em;
@@ -128,87 +167,103 @@ body {
     background-color: var(--pico-muted-background);
 }
 
-.task-row:hover {
-    background-color: var(--pico-hover-background);
-}
-
-/* Make the border of an UNCHECKED checkbox blue on hover */
-.task-row:not(.completed) .checkbox:hover {
-    border-color: var(--pico-primary);
-}
-
-/* Make the star icon pop slightly on hover */
-.star-button {
-    transition: transform 0.1s ease-in-out; /* Add transition for smoothness */
-}
-.star-button:hover {
-    transform: scale(1.2);
-}
-#enable-notifications-button:hover,
-#routine-display article header button:hover {
-    background-color: var(--pico-hover-background);
-    border-color: var(--pico-hover-background);
-    color: var(--pico-primary-inverse); /* Make the icon/text white on hover */
-}
-.delete-button {
-    cursor: pointer;
-    margin-left: auto;
-    padding-left: 1rem;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-}
-.delete-button:hover {
-    opacity: 1;
-}
-#add-task-fab {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    display: grid;
-    place-content: center;
-    font-size: 2rem;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    z-index: 100;
-}
+/* --- 7. FLOATING BUTTON & CALENDAR --- */
 .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;
 }
-.calendar-grid .day-name {
-    font-weight: bold;
-    text-align: center;
-    padding: 0.5rem 0;
+.calendar-grid .day-name { font-weight: bold; text-align: center; padding: 0.5rem 0; }
+.calendar-day { padding: 0.5rem; min-height: 100px; border: 1px solid var(--pico-muted-border-color); border-radius: var(--pico-border-radius); background-color: var(--pico-card-background-color); }
+.calendar-day.other-month { opacity: 0.4; }
+.calendar-day.today { border-color: var(--pico-primary); background-color: var(--pico-hover-background); }
+.calendar-tasks { list-style: none; padding: 0; margin: 0.5rem 0 0 0; font-size: 0.8em; }
+.calendar-tasks li { padding: 2px 4px; border-radius: 4px; background-color: var(--pico-hover-background); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
-.calendar-day {
-    padding: 0.5rem;
-    min-height: 100px;
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: var(--pico-border-radius);
+
+#streak-counter.animate {
+  animation: pulse 0.5s ease-in-out;
+}
+
+/* --- NEW: Tooltip Styles --- */
+[title] {
+  position: relative; /* This is the anchor for the tooltip */
+}
+
+/* The actual tooltip box */
+[title]::after {
+  content: attr(title); /* Use the title attribute as the text */
+  position: absolute;
+  bottom: 100%; /* Position it above the element */
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px); /* Center it and add a small gap */
+  
+  background-color: #000;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: var(--pico-border-radius);
+  font-size: 0.8em;
+  white-space: nowrap;
+
+  /* Hide it by default */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 10;
+}
+
+/* Show the tooltip on hover */
+[title]:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --- NEW: Bottom Navigation Bar --- */
+:root {
+    --nav-height: 60px; /* Define nav height as a variable */
+}
+
+main.container {
+    padding-bottom: var(--nav-height); /* Prevent content from hiding behind the nav bar */
+}
+
+#bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
     background-color: var(--pico-card-background-color);
+    border-top: 1px solid var(--pico-form-element-border-color);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
-.calendar-day.other-month {
-    opacity: 0.4;
+
+#bottom-nav button {
+    background: none;
+    border: none;
+    padding: 4px 12px;
+    margin: 0;
+    color: var(--pico-secondary-foreground);
+    font-size: 0.75em;
+    text-align: center;
+    cursor: pointer;
+    border-radius: var(--pico-border-radius);
+    transition: color 0.2s, background-color 0.2s;
 }
-.calendar-day.today {
-    border-color: var(--pico-primary);
+
+#bottom-nav button:hover {
     background-color: var(--pico-hover-background);
 }
-.calendar-tasks {
-    list-style: none;
-    padding: 0;
-    margin: 0.5rem 0 0 0;
-    font-size: 0.8em;
-}
-.calendar-tasks li {
-    padding: 2px 4px;
-    border-radius: 4px;
-    background-color: var(--pico-hover-background);
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+
+#bottom-nav button.active {
+    color: var(--pico-primary);
 }

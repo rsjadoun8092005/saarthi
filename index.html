@@ -14,14 +14,9 @@
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h1>Saarthi</h1>
+                    <h1 id="main-greeting">Saarthi</h1>
                     <select id="plan-switcher" aria-label="Select a plan"></select>
                 </div>
-                <nav>
-                    <ul>
-                        <li><button id="view-checklist-button" class="contrast">Checklist</button></li>
-                        <li><button id="view-calendar-button" class="secondary">Calendar</button></li>
-                    </ul>
-                </nav>
             </div>
             <p id="streak-counter"></p>
         </header>
@@ -44,7 +39,6 @@
         </section>
 
         <section id="checklist-view" hidden>
-            <a href="#" id="add-task-fab" role="button" class="contrast" title="Add New Task">+</a>
             <div id="checklist-header" style="display: flex; justify-content: space-between; align-items: center;">
                  <h2 id="today-date"></h2>
                  <div>
@@ -179,6 +173,12 @@
         </dialog>
 
     </main>
-    <script type="module" src="js/main.js"></script>
+     <script type="module" src="js/main.js"></script>
+
+    <nav id="bottom-nav">
+        <button id="nav-checklist-button" class="active">📝<br>Checklist</button>
+        <button id="nav-add-button">➕<br>Add Task</button>
+        <button id="nav-calendar-button">🗓️<br>Calendar</button>
+    </nav>
 </body>
 </html>

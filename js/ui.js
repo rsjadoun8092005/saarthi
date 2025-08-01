@@ -6,6 +6,7 @@
 let weeklyChart = null;
 let categoryChart = null;
 
+// In js/ui.js, replace your entire renderRoutine function with this
 export function renderRoutine(routineData, routineDisplayEl) {
     routineDisplayEl.innerHTML = '';
     if (!routineData) return;
@@ -13,12 +14,23 @@ export function renderRoutine(routineData, routineDisplayEl) {
     routineData.forEach(section => {
         const article = document.createElement('article');
         article.dataset.sectionContainer = 'true';
+
+        // Calculate stats and progress percentage for the section
         let totalTasks = 0, completedTasks = 0;
         section.tasks.forEach(task => {
-            totalTasks++; if (task.completed) completedTasks++;
-            if (task.subtasks) { task.subtasks.forEach(subtask => { totalTasks++; if (subtask.completed) completedTasks++; }); }
+            totalTasks++;
+            if (task.completed) completedTasks++;
+            if (task.subtasks) {
+                task.subtasks.forEach(subtask => {
+                    totalTasks++;
+                    if (subtask.completed) completedTasks++;
+                });
+            }
         });
         const statsText = `${completedTasks} / ${totalTasks} completed`;
+        const progressPercent = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+        // Map tasks to HTML
         let tasksHTML = section.tasks.map((task, taskIndex) => {
             const taskNoteHTML = task.note ? `<div class="task-note">${task.note}</div>` : '';
             const starIcon = task.starred ? '⭐' : '☆';
@@ -35,7 +47,21 @@ export function renderRoutine(routineData, routineDisplayEl) {
             }
             return `<div class="task-container" data-task-category="${task.category || 'none'}"><div class="task-row ${isCompleted}" data-section-id="${section.id}" data-task-index="${taskIndex}"><div class="checkbox" data-action="toggle-check"></div><div class="task-content"><span class="star-button" data-action="toggle-star">${starIcon}</span><strong class="task-text">${task.text}</strong>${categoryTag}<span class="delete-button" data-action="delete" title="Delete Task">🗑️</span></div></div>${taskNoteHTML}<div class="subtask-wrapper">${subtasksHTML}</div></div>`;
         }).join('');
-        article.innerHTML = `<header><div style="flex-grow: 1;"><strong>${section.header}</strong><div style="font-size: 0.8em; color: var(--pico-secondary-foreground);">${statsText}</div></div><button class="outline" data-alarm-section-id="${section.id}" style="padding: 2px 8px;" aria-label="Set Alarm">🔔</button></header><div class="article-body">${tasksHTML}</div>`;
+        
+        // Build the final HTML for the article
+        article.innerHTML = `
+            <header>
+                <div style="flex-grow: 1;">
+                    <strong>${section.header}</strong>
+                    <div style="font-size: 0.8em; color: var(--pico-secondary-foreground);">${statsText}</div>
+                </div>
+                <button class="outline" data-alarm-section-id="${section.id}" style="padding: 2px 8px;" title="Set Alarm">🔔</button>
+            </header>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: ${progressPercent}%;"></div>
+            </div>
+            <div class="article-body">${tasksHTML}</div>
+        `;
         routineDisplayEl.appendChild(article);
     });
 }

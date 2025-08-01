@@ -34,17 +34,18 @@ const createNewPlanButton = document.getElementById('create-new-plan-button');
 const renamePlanButton = document.getElementById('rename-plan-button');
 const deletePlanButton = document.getElementById('delete-plan-button');
 const scheduleContainer = document.getElementById('weekly-schedule');
-const addTaskFab = document.getElementById('add-task-fab');
 const addTaskModal = document.getElementById('add-task-modal');
 const addTaskForm = document.getElementById('add-task-form');
 const addTaskModalClose = addTaskModal.querySelector('.close');
-const viewChecklistButton = document.getElementById('view-checklist-button');
-const viewCalendarButton = document.getElementById('view-calendar-button');
 const calendarView = document.getElementById('calendar-view');
 const monthYearHeader = document.getElementById('month-year-header');
 const calendarDays = document.getElementById('calendar-days');
 const prevMonthButton = document.getElementById('prev-month-button');
 const nextMonthButton = document.getElementById('next-month-button');
+const navChecklistButton = document.getElementById('nav-checklist-button');
+const navAddButton = document.getElementById('nav-add-button');
+const navCalendarButton = document.getElementById('nav-calendar-button');
+const mainGreeting = document.getElementById('main-greeting');
 
 // ---------------------------------------------------------------
 // 2. STATE MANAGEMENT
@@ -60,10 +61,21 @@ const DEFAULT_DATA = {
 // 3. APP INITIALIZATION & MAIN FUNCTIONS
 // ---------------------------------------------------------------
 function initializeApp() {
+    // Set the greeting first
+    const hour = new Date().getHours();
+    if (hour < 12) {
+        mainGreeting.innerHTML = "Good Morning, Raghvendra ☀️";
+    } else if (hour < 18) {
+        mainGreeting.innerHTML = "Good Afternoon, Raghvendra 🌤️";
+    } else {
+        mainGreeting.innerHTML = "Good Evening, Raghvendra 🌙";
+    }
+
+    // Load all data using the correct function call
     saarthiData = logic.loadData(DEFAULT_DATA);
     ui.updatePlanSwitcherUI(planSwitcher, saarthiData);
 
-    todayDateEl.textContent = `Today: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}`;
+    todayDateEl.textContent = `Today: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
     
     const activePlan = saarthiData.plans[saarthiData.active_plan_name];
     if (activePlan?.data) {
@@ -75,7 +87,7 @@ function initializeApp() {
         generatorView.hidden = false;
         checklistView.hidden = true;
     }
-    updateUI();
+    updateUI(); // This will correctly call the streak update and save
 }
 
 function dailyResetCheck() {
@@ -101,7 +113,18 @@ function updateUI() {
     
     const streakResult = logic.updateStreak(saarthiData);
     saarthiData = streakResult.data;
-    streakCounterEl.textContent = streakResult.text;
+    
+    // Check if the text content is changing before animating
+    if (streakCounterEl.textContent !== streakResult.text && streakResult.text) {
+        streakCounterEl.textContent = streakResult.text;
+        streakCounterEl.classList.add('animate');
+        // Remove the class after the animation finishes
+        setTimeout(() => {
+            streakCounterEl.classList.remove('animate');
+        }, 500); // 500ms matches the animation duration
+    } else {
+        streakCounterEl.textContent = streakResult.text;
+    }
     
     logic.saveData(saarthiData);
 }
@@ -222,7 +245,7 @@ routineDisplay.addEventListener('click', (e) => {
     const activePlan = saarthiData.plans[saarthiData.active_plan_name];
 
     if (alarmButton) {
-        const sectionId = alarmButton.dataset.alarmId;
+        const sectionId = alarmButton.dataset.alarmSectionId;
         const section = activePlan.data.find(s => s.id === sectionId);
         if (section) ui.setAlarm(section);
         return;
@@ -291,12 +314,6 @@ copyTemplateButton.addEventListener('click', () => {
     navigator.clipboard.writeText(template.trim()).then(() => alert('Template copied to clipboard!'));
 });
 
-// Show the "Add Task" modal when the FAB is clicked
-addTaskFab.addEventListener('click', (e) => {
-    e.preventDefault();
-    addTaskModal.showModal();
-});
-
 // Close the "Add Task" modal
 addTaskModalClose.addEventListener('click', () => addTaskModal.close());
 
@@ -342,16 +359,26 @@ addTaskForm.addEventListener('submit', (e) => {
     addTaskModal.close();
 });
 
-viewChecklistButton.addEventListener('click', () => {
+// In js/main.js, replace your old view-switcher listeners with these
+
+navChecklistButton.addEventListener('click', () => {
     checklistView.hidden = false;
     calendarView.hidden = true;
+    navChecklistButton.classList.add('active');
+    navCalendarButton.classList.remove('active');
 });
 
-viewCalendarButton.addEventListener('click', () => {
+navCalendarButton.addEventListener('click', () => {
     checklistView.hidden = true;
     calendarView.hidden = false;
-    // Pass the scheduled tasks data to the render function
+    navCalendarButton.classList.add('active');
+    navChecklistButton.classList.remove('active');
+    // Render the calendar when switching to it
     ui.renderCalendar(currentDate, calendarDays, monthYearHeader, saarthiData.scheduledTasks);
+});
+
+navAddButton.addEventListener('click', () => {
+    addTaskModal.showModal();
 });
 
 // Do the same for the prev and next month buttons
