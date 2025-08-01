@@ -46,6 +46,11 @@ const navChecklistButton = document.getElementById('nav-checklist-button');
 const navAddButton = document.getElementById('nav-add-button');
 const navCalendarButton = document.getElementById('nav-calendar-button');
 const mainGreeting = document.getElementById('main-greeting');
+const navTodayButton = document.getElementById('nav-today-button');
+const searchInput = document.getElementById('search-input');
+const exportDataButton = document.getElementById('export-data-button');
+const importDataButton = document.getElementById('import-data-button');
+const importFileInput = document.getElementById('import-file-input');
 
 // ---------------------------------------------------------------
 // 2. STATE MANAGEMENT
@@ -60,34 +65,25 @@ const DEFAULT_DATA = {
 // ---------------------------------------------------------------
 // 3. APP INITIALIZATION & MAIN FUNCTIONS
 // ---------------------------------------------------------------
-function initializeApp() {
-    // Set the greeting first
-    const hour = new Date().getHours();
-    if (hour < 12) {
-        mainGreeting.innerHTML = "Good Morning, Raghvendra ☀️";
-    } else if (hour < 18) {
-        mainGreeting.innerHTML = "Good Afternoon, Raghvendra 🌤️";
-    } else {
-        mainGreeting.innerHTML = "Good Evening, Raghvendra 🌙";
-    }
+// In js/main.js, replace these three functions
 
-    // Load all data using the correct function call
+function initializeApp() {
+    // 1. Set the greeting
+    const hour = new Date().getHours();
+    if (hour < 12) { mainGreeting.innerHTML = "Good Morning, Raghvendra ☀️"; } 
+    else if (hour < 18) { mainGreeting.innerHTML = "Good Afternoon, Raghvendra 🌤️"; } 
+    else { mainGreeting.innerHTML = "Good Evening, Raghvendra 🌙"; }
+
+    // 2. Load all data
     saarthiData = logic.loadData(DEFAULT_DATA);
     ui.updatePlanSwitcherUI(planSwitcher, saarthiData);
-
     todayDateEl.textContent = `Today: ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
     
-    const activePlan = saarthiData.plans[saarthiData.active_plan_name];
-    if (activePlan?.data) {
-        dailyResetCheck();
-        ui.renderRoutine(activePlan.data, routineDisplay);
-        generatorView.hidden = true;
-        checklistView.hidden = false;
-    } else {
-        generatorView.hidden = false;
-        checklistView.hidden = true;
-    }
-    updateUI(); // This will correctly call the streak update and save
+    // 3. Reset daily templates if needed
+    dailyResetCheck();
+
+    // 4. Show the correct view and update stats
+    updateUI();
 }
 
 function dailyResetCheck() {
@@ -108,25 +104,33 @@ function dailyResetCheck() {
 }
 
 function updateUI() {
-    const activePlanData = saarthiData.plans[saarthiData.active_plan_name]?.data;
-    ui.renderRoutine(activePlanData, routineDisplay);
+    // Generate the unified "Today" view data every time the UI updates
+    const todayRoutine = logic.generateTodayViewData(saarthiData);
     
+    // Render the main checklist with the merged data
+    ui.renderRoutine(todayRoutine, routineDisplay);
+
+    // Update the streak counter with animation
     const streakResult = logic.updateStreak(saarthiData);
     saarthiData = streakResult.data;
-    
-    // Check if the text content is changing before animating
     if (streakCounterEl.textContent !== streakResult.text && streakResult.text) {
         streakCounterEl.textContent = streakResult.text;
         streakCounterEl.classList.add('animate');
-        // Remove the class after the animation finishes
         setTimeout(() => {
             streakCounterEl.classList.remove('animate');
-        }, 500); // 500ms matches the animation duration
+        }, 500);
     } else {
         streakCounterEl.textContent = streakResult.text;
     }
-    
-    logic.saveData(saarthiData);
+
+    // Show the checklist or generator based on whether there are tasks for today
+    if (todayRoutine.length > 0) {
+        generatorView.hidden = true;
+        checklistView.hidden = false;
+    } else {
+        generatorView.hidden = false;
+        checklistView.hidden = true;
+    }
 }
 
 // ---------------------------------------------------------------
@@ -135,21 +139,38 @@ function updateUI() {
 generatorForm.addEventListener('submit', (e) => {
     e.preventDefault();
     let planName = saarthiData.active_plan_name;
-    if (!planName) {
+
+    if (!planName || !saarthiData.plans[planName]) {
         planName = prompt("Name this new plan:", "My Daily Plan");
-        if (!planName) return;
-        if (saarthiData.plans[planName]) { alert("A plan with that name already exists."); return; }
+        if (!planName) return; // User cancelled
+        if (saarthiData.plans[planName]) {
+            alert("A plan with that name already exists.");
+            return;
+        }
     }
+
     const timetableText = timetableInput.value;
     const goalsText = goalsInput.value;
+    const newPlanData = logic.parseInputs(timetableText, goalsText);
+
+    // Save the new plan data
     saarthiData.plans[planName] = {
-        data: logic.parseInputs(timetableText, goalsText),
-        rawTimetable: timetableText, rawGoals: goalsText,
+        data: newPlanData,
+        rawTimetable: timetableText,
+        rawGoals: goalsText,
         last_saved_date: new Date().toLocaleDateString('en-CA')
     };
     saarthiData.active_plan_name = planName;
     logic.saveData(saarthiData);
-    initializeApp();
+
+    // --- CORRECTED LOGIC ---
+    // Instead of re-initializing the whole app, just render the plan we just made.
+    ui.renderRoutine(newPlanData, routineDisplay);
+    ui.updatePlanSwitcherUI(planSwitcher, saarthiData);
+    
+    // Switch the view manually
+    generatorView.hidden = true;
+    checklistView.hidden = false;
 });
 
 editButton.addEventListener('click', () => {
@@ -361,11 +382,13 @@ addTaskForm.addEventListener('submit', (e) => {
 
 // In js/main.js, replace your old view-switcher listeners with these
 
-navChecklistButton.addEventListener('click', () => {
+navTodayButton.addEventListener('click', () => {
     checklistView.hidden = false;
     calendarView.hidden = true;
-    navChecklistButton.classList.add('active');
+    navTodayButton.classList.add('active');
     navCalendarButton.classList.remove('active');
+    // Re-run initializeApp to ensure the "Today" view is fresh
+    initializeApp(); 
 });
 
 navCalendarButton.addEventListener('click', () => {
@@ -389,6 +412,45 @@ prevMonthButton.addEventListener('click', () => {
 nextMonthButton.addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
     ui.renderCalendar(currentDate, calendarDays, monthYearHeader, saarthiData.scheduledTasks);
+});
+
+searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const allTasks = document.querySelectorAll('.task-container');
+
+    allTasks.forEach(taskEl => {
+        const taskText = taskEl.textContent.toLowerCase();
+        if (taskText.includes(searchTerm)) {
+            taskEl.style.display = 'block';
+        } else {
+            taskEl.style.display = 'none';
+        }
+    });
+});
+
+exportDataButton.addEventListener('click', () => {
+    logic.exportData(saarthiData);
+});
+
+importDataButton.addEventListener('click', () => {
+    // Trigger the hidden file input
+    importFileInput.click();
+});
+
+importFileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        logic.importData(file, (importedData) => {
+            if (confirm("This will overwrite all current data. Are you sure you want to proceed?")) {
+                saarthiData = importedData;
+                logic.saveData(saarthiData);
+                // Reset the file input so the same file can be loaded again
+                importFileInput.value = ""; 
+                managePlansModal.close();
+                initializeApp();
+            }
+        });
+    }
 });
 
 // ---------------------------------------------------------------

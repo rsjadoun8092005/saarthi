@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0A192F">
     <title>Saarthi</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
     <link rel="stylesheet" href="style.css">
@@ -46,6 +47,9 @@
                     <button id="enable-notifications-button" class="outline">🔔 Notifications</button>
                  </div>
             </div>
+            <form id="search-form" role="search" style="margin: 1rem 0;">
+                <input type="search" id="search-input" placeholder="Search tasks...">
+            </form>
             <div id="category-filters" style="margin-bottom: 1rem;"></div>
             <div id="routine-display"></div>
             <footer>
@@ -97,15 +101,20 @@
               <a href="#close" aria-label="Close" class="close"></a>
               <h2>Manage Your Plans</h2>
             </header>
-            <div class="grid">
-              <button id="create-new-plan-button">Create New</button>
-              <button id="rename-plan-button" class="secondary">Rename Current</button>
-              <button id="delete-plan-button" class="secondary outline">Delete Current</button>
-            </div>
-            <hr>
+          
+            <fieldset>
+                <legend>Plan Actions</legend>
+                <div class="grid">
+                  <button id="create-new-plan-button">Create New</button>
+                  <button id="rename-plan-button" class="secondary">Rename Current</button>
+                  <button id="delete-plan-button" class="secondary outline">Delete Current</button>
+                </div>
+            </fieldset>
+          
             <fieldset id="weekly-schedule">
               <legend>Weekly Schedule</legend>
-              <p><small>Assign a plan to each day. The app will load it automatically.</small></p>
+              <p><small>Assign a plan to each day of the week. The app will load it automatically.</small></p>
+              
               <div class="schedule-day-row" style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; margin-bottom: 0.5rem;">
                 <label for="schedule-1">Monday</label>
                 <select id="schedule-1" data-day="1"></select>
@@ -134,6 +143,16 @@
                 <label for="schedule-0">Sunday</label>
                 <select id="schedule-0" data-day="0"></select>
               </div>
+            </fieldset>
+          
+            <fieldset>
+                <legend>Data Management</legend>
+                <p><small>Save your entire setup to a file or restore from a backup.</small></p>
+                <div class="grid">
+                    <button id="export-data-button">Export All Data</button>
+                    <button id="import-data-button" class="secondary">Import from Backup</button>
+                    <input type="file" id="import-file-input" accept=".json" hidden>
+                </div>
             </fieldset>
           </article>
         </dialog>
@@ -176,9 +195,9 @@
      <script type="module" src="js/main.js"></script>
 
     <nav id="bottom-nav">
-        <button id="nav-checklist-button" class="active">📝<br>Checklist</button>
-        <button id="nav-add-button">➕<br>Add Task</button>
-        <button id="nav-calendar-button">🗓️<br>Calendar</button>
+    <button id="nav-today-button" class="active">📝<br>Today</button>
+    <button id="nav-add-button">➕<br>Add Task</button>
+    <button id="nav-calendar-button">🗓️<br>Calendar</button>
     </nav>
 </body>
 </html>

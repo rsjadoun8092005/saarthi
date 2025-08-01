@@ -75,6 +75,34 @@ export function parseInputs(timetableText, goalsText) {
     return routine;
 }
 
+export function generateTodayViewData(saarthiData) {
+    const today = new Date();
+    const todayDay = today.getDay(); // 0=Sun, 1=Mon...
+    const todayDateString = today.toISOString().slice(0, 10); // YYYY-MM-DD
+
+    let mergedRoutine = [];
+    
+    // 1. Get the scheduled daily plan for today
+    const scheduledPlanName = saarthiData.schedule ? saarthiData.schedule[todayDay] : null;
+    if (scheduledPlanName && saarthiData.plans[scheduledPlanName]?.data) {
+        // Use a deep copy to avoid modifying the original template
+        const planTemplate = JSON.parse(JSON.stringify(saarthiData.plans[scheduledPlanName].data));
+        mergedRoutine.push(...planTemplate);
+    }
+
+    // 2. Get any one-off tasks scheduled for today from the calendar
+    const scheduledTasks = saarthiData.scheduledTasks ? saarthiData.scheduledTasks[todayDateString] : null;
+    if (scheduledTasks && scheduledTasks.length > 0) {
+        mergedRoutine.push({
+            id: "scheduled-today",
+            header: "🗓️ Scheduled for Today",
+            tasks: scheduledTasks
+        });
+    }
+
+    return mergedRoutine;
+}
+
 export function updateStreak(saarthiData) {
     const activePlan = saarthiData.plans[saarthiData.active_plan_name];
     if (!activePlan?.data) return { text: '', data: saarthiData };
@@ -114,3 +142,37 @@ export function updateHistory(saarthiData) {
     saarthiData.history[today] = completedCount;
     return saarthiData;
 }
+
+export function exportData(saarthiData) {
+    const jsonString = JSON.stringify(saarthiData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `saarthi-backup-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+export function importData(file, callback) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const importedData = JSON.parse(event.target.result);
+            // Basic validation to ensure it's our data structure
+            if (importedData && importedData.plans && importedData.history) {
+                callback(importedData);
+            } else {
+                alert("Error: Invalid or corrupted backup file.");
+            }
+        } catch (error) {
+            alert("Error reading backup file. Make sure it's a valid JSON file.");
+            console.error("Import error:", error);
+        }
+    };
+    reader.readAsText(file);
+}
+
