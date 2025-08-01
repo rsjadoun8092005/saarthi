@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saarthi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>Saarthi</h1>
+            <p>Your Charioteer for Daily Discipline</p>
+        </header>
+
+        <section id="generator-view">
+    <h2>Generate Your Daily Plan</h2>
+    <p>Define your recurring schedule and add your specific goals for today.</p>
+
+    <form id="generator-form">
+
+        <label for="timetable-input">1. Your Daily Timetable</label>
+            <textarea id="timetable-input" rows="10" placeholder="---
+    4:00-5:00 AM - Divine Hour
+    [ ] Freshen up + light diya
+    [ ] Mantra / Chalisa / Jaap
+    ---
+    5:00-5:30 AM - Bodyweight Workout
+    [ ] Push-ups (3x15)
+    [ ] Squats (3x20)
+    ---"></textarea>
+
+            <label for="goals-input">2. Today's One-Time Goals</label>
+            <textarea id="goals-input" rows="5" placeholder="[ ] Finish API deployment chapter
+    [ ] Research PWA service workers
+    [ ] Call mentor about project idea"></textarea>
+
+        <button type="submit">Generate My Day</button>
+    </form>
+</section>
+
+        <section id="checklist-view" hidden>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                 <h2 id="today-date"></h2>
+                 <button id="enable-notifications-button" class="outline">🔔 Notifications</button>
+            </div>
+            <div id="routine-display">
+                </div>
+             <footer>
+                <button id="reset-button" class="secondary">Start New Plan</button>
+            </footer>
+        </section>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
